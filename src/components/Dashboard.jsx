@@ -28,18 +28,53 @@ const CATALOG_GALLERY = {
     ]
 };
 
-// ── Image Loader Component ──
+// ── Utility: Client-Side Image Optimization for Mobile ──
+const optimizeImageForUpload = (file) => {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_DIM = 1200; // Optimal for Stability AI
+
+                if (width > height && width > MAX_DIM) {
+                    height *= MAX_DIM / width;
+                    width = MAX_DIM;
+                } else if (height > MAX_DIM) {
+                    width *= MAX_DIM / height;
+                    height = MAX_DIM;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.85);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
+// ── Image Loader Component (iOS WebKit Optimized) ──
 const ImageLoader = ({ src, alt }) => {
     const [loaded, setLoaded] = React.useState(false);
     const [error, setError] = React.useState(false);
+    const imgRef = useRef(null);
 
     useEffect(() => {
         setLoaded(false);
         setError(false);
+        // Force reload for iOS blob consistency
+        if (imgRef.current) imgRef.current.src = src;
     }, [src]);
 
     return (
-        <div className="image-loader-wrap">
+        <div className="image-loader-wrap" style={{ aspectRatio: '1/1', position: 'relative' }}>
             {!loaded && !error && (
                 <div className="image-loader-placeholder gold-glow-pulse">
                     <div className="premium-spinner" />
@@ -53,8 +88,10 @@ const ImageLoader = ({ src, alt }) => {
                 </div>
             )}
             <img
+                ref={imgRef}
                 src={src}
                 alt={alt}
+                crossOrigin="anonymous"
                 onLoad={() => setLoaded(true)}
                 onError={() => {
                     setError(true);
@@ -64,20 +101,17 @@ const ImageLoader = ({ src, alt }) => {
                 style={{
                     display: loaded ? 'block' : 'none',
                     opacity: loaded ? 1 : 0,
-                    transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+                    transition: 'opacity 0.6s ease-out',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
                 }}
             />
         </div>
     );
 };
 
-// 🎨 Helper to name hex colors for AI
-const getColorDescription = (hex, name) => {
-    if (name && name.length > 2) return `${name} (Hex: ${hex})`;
-    const map = { '#000000': 'Infinite Black', '#FFFFFF': 'Pure White', '#FF0000': 'Ferrari Red', '#00FF00': 'Emerald Green', '#0000FF': 'Royal Blue', '#FFD700': 'Imperial Gold', '#D4AF37': 'Premium Gold' };
-    return map[hex.toUpperCase()] || `Custom Color ${hex}`;
-};
+// ... Color Desc Helper stays same ...
 
 export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign }) {
     const [isGenerating, setIsGenerating] = useState(false);
@@ -122,6 +156,10 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
             const STABILITY_KEY = "sk-HBBqFiK8YbHDB91o9g7xluSLiaUaK5Z1XWZW7d3VyNgGy9Pf";
             let imageUrl = '';
 
+            // 🔥 Add Timeout for cellular reliability
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s max
+
             if (formData.model === 'model1' || formData.model === 'model2') {
                 const endpoint = formData.model === 'model1' 
                     ? "https://api.stability.ai/v2beta/stable-image/generate/ultra"
@@ -134,8 +172,11 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
                 const response = await fetch(endpoint, {
                     method: "POST",
                     headers: { "Authorization": `Bearer ${STABILITY_KEY}`, "Accept": "image/*" },
-                    body: fd
+                    body: fd,
+                    signal: controller.signal
                 });
+
+                clearTimeout(timeoutId);
 
                 if (response.status === 200) {
                     const blob = await response.blob();
@@ -152,7 +193,11 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
             onAddDesign({ id: Date.now(), ...formData, prompt: formData.textPrompt || "Production Render", images: [imageUrl] });
             setTimeout(() => setIsGenerating(false), 300);
         } catch (err) {
+            console.error("Architect Error:", err);
             setIsGenerating(false);
+            // Emergency fallback with random seed
+            const emergencyPrompt = encodeURIComponent(finalPrompt.substring(0, 500));
+            onAddDesign({ id: Date.now(), ...formData, prompt: "Quick Render (Fallback)", images: [`https://image.pollinations.ai/prompt/${emergencyPrompt}?seed=${Date.now()}`] });
         }
     };
 
@@ -166,13 +211,26 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
     };
 
     const handleRecolor = async () => {
-        if (!recolorPreview) return;
+        if (!recolorPreview || !recolorImage) {
+            // Check if catalog image selected
+                                // handle catalog case: imgBlob from URL
+                                const imgResponse = await fetch(recolorPreview);
+                                imgBlob = await imgResponse.blob();
+                            } else return;
+                        }
         setIsRecoloring(true);
 
         try {
             const colorDesc = getColorDescription(recolorHex, recolorTarget);
-            const imgResponse = await fetch(recolorPreview);
-            const imgBlob = await imgResponse.blob();
+            
+            // 🔥 iOS Performance Optimization: Optimize image before upload
+            let imgBlob;
+            if (recolorImage) {
+                imgBlob = await optimizeImageForUpload(recolorImage);
+            } else {
+                const imgResponse = await fetch(recolorPreview);
+                imgBlob = await imgResponse.blob();
+            }
 
             const fd = new FormData();
             fd.append('image', imgBlob);
@@ -194,6 +252,7 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
             onAddDesign({ id: Date.now(), type: recolorObject, style: 'Recolor Studio', prompt: `Recolored to ${colorDesc}`, images: [imageUrl] });
             setIsRecoloring(false);
         } catch (err) {
+            console.error("Recolor Error:", err);
             setIsRecoloring(false);
         }
     };

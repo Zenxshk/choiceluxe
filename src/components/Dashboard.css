@@ -1,0 +1,308 @@
+/* ─── Global Variables ─── */
+:root {
+    --gold-primary: #D4AF37;
+    --gold-secondary: #B8860B;
+    --gold-light: #F9E2AF;
+    --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+    --gold-glow: 0 0 15px rgba(212, 175, 55, 0.4);
+    --bg-dark: #0A0A0C;
+    --card-bg: rgba(20, 20, 24, 0.9);
+    --border-color: rgba(212, 175, 55, 0.2);
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 24px;
+    padding-bottom: 80px;
+}
+
+/* ─── Mode Tabs ─── */
+.dash-mode-tabs {
+    display: flex;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px;
+    border-radius: 20px;
+    width: fit-content;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    margin: 0 auto 20px;
+}
+
+.dash-tab {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    background: transparent;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dash-tab.active {
+    background: var(--gold-gradient);
+    color: #000;
+    box-shadow: var(--gold-glow);
+}
+
+/* ─── Recolor Panel ─── */
+.recolor-panel {
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+}
+
+.recolor-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+    align-items: start;
+}
+
+.recolor-main-side {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.recolor-upload-area {
+    width: 100%;
+    height: 300px;
+    border: 2px dashed rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    background: rgba(212, 175, 55, 0.02);
+}
+
+.upl-pl {
+    text-align: center;
+    color: var(--gold-primary);
+}
+
+.upl-pl p {
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 🎨 Gallery System */
+.masterpiece-gallery-wrap {
+    margin-top: 24px;
+    background: rgba(212, 175, 55, 0.03);
+    padding: 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.gallery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.gallery-header p {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.mini-cat-tabs {
+    display: flex;
+    gap: 12px;
+}
+
+.mini-cat-tabs button {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    color: rgba(255,255,255,0.7);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mini-cat-tabs button:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: #fff;
+}
+
+.mini-cat-tabs button.active {
+    background: var(--gold-primary);
+    color: #000;
+    font-weight: 800;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+.gallery-scroll {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    padding: 4px 4px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-primary) transparent;
+}
+
+.gallery-item-luxury {
+    flex: 0 0 calc(25% - 18px); /* 4 items per row on PC */
+    min-width: 180px;
+    height: 140px;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: #000;
+}
+
+.gallery-item-luxury:hover {
+    border-color: var(--gold-primary);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.gallery-item-luxury img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: opacity 0.3s;
+}
+
+.gallery-item-luxury:hover img {
+    opacity: 1;
+}
+
+/* ─── Mobile Overrides (Keep it perfectly good) ─── */
+@media (max-width: 768px) {
+    .masterpiece-gallery-wrap {
+        margin-top: 12px;
+        padding: 16px;
+    }
+
+    .gallery-item-luxury {
+        flex: 0 0 140px;
+        height: 100px;
+    }
+
+    .gallery-scroll {
+        gap: 12px;
+    }
+}
+
+/* ─── Controls ─── */
+.recolor-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: rgba(0,0,0,0.3);
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.recolor-controls h3 {
+    font-size: 18px;
+    color: var(--gold-light);
+    margin-bottom: 8px;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-group label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+}
+
+.hex-row {
+    display: flex;
+    gap: 8px;
+}
+
+.hex-row input[type="text"] {
+    flex: 1;
+}
+
+.hex-row input[type="color"] {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.gold-btn {
+    background: var(--gold-gradient);
+    color: #000;
+    font-weight: 800;
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 12px;
+}
+
+.gold-btn:disabled {
+    opacity: 0.5;
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+
+/* ─── Mobile Restoration ─── */
+@media (max-width: 900px) {
+    .recolor-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 12px;
+    }
+
+    .recolor-panel {
+        padding: 20px;
+    }
+
+    .dash-mode-tabs {
+        width: 100%;
+    }
+
+    .dash-tab {
+        flex: 1;
+        padding: 10px 8px;
+        font-size: 11px;
+    }
+
+    /* 🔥 Ensure spans are visible again as requested */
+    .dash-tab span {
+        display: inline-block !important;
+    }
+
+    .recolor-upload-area {
+        height: 220px;
+    }
+}

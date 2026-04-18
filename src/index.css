@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-color: #050505;
+  --panel-bg: rgba(18, 18, 20, 0.75);
+  --border-color: rgba(212, 175, 55, 0.15);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  
+  /* ── Golden Theme ── */
+  --gold-primary: #D4AF37;
+  --gold-light: #FFD700;
+  --gold-dark: #996515;
+  --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #996515 100%);
+  --gold-glow: 0 0 20px rgba(212, 175, 55, 0.3);
+  
+  --accent-brown: #2a221b;
+  --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+  --font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+}
+
+/* ─── Premium Loader Animations ─── */
+@keyframes fallDown {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes colorToGradient {
+  0% { background-color: var(--gold-primary); }
+  100% { background-image: var(--gold-gradient); }
+}
+
+@keyframes fadePageIn {
+  0% { opacity: 0; filter: blur(10px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+.img-standardized {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(166, 140, 120, 0.04), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.02), transparent 25%);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+  animation: fadePageIn 1.2s ease-out;
+}
+
+#root {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+select {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Ensure options also have black background */
+option {
+  background-color: #000 !important;
+  color: #fff !important;
+  padding: 12px;
+}
+
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-brown);
+  box-shadow: 0 0 0 1px var(--accent-brown);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}

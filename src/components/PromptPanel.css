@@ -1,0 +1,258 @@
+.prompt-panel {
+    padding: 24px;
+    animation: fadeIn 0.5s ease-out;
+}
+.prompt-panel.compact {
+    padding: 16px;
+    background: rgba(18, 18, 20, 0.4);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+/* ─── Top Bar ─── */
+.pp-top-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.pp-type-select {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.pp-type-select label {
+    font-size: 11px;
+    color: var(--gold-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.pp-type-select select {
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    cursor: pointer;
+}
+
+.pp-type-select select:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+}
+
+/* ─── Suggestion UI ─── */
+.pp-suggest-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: var(--gold-light);
+    font-weight: 600;
+    border-radius: 12px;
+}
+
+.gold-glow-btn:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: var(--gold-primary);
+    box-shadow: var(--gold-glow);
+}
+
+.pp-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    min-width: 300px;
+    background: #000;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.pp-dropdown-item {
+    padding: 18px 20px;
+    transition: all 0.2s;
+    background: transparent;
+    border: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    color: #fff;
+    cursor: pointer;
+}
+
+.pp-dropdown-item strong {
+    display: block;
+    color: #fff;
+    font-size: 15px;
+}
+
+.pp-dropdown-item small {
+    display: block;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+}
+
+.pp-dropdown-item:hover {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.dd-icon-wrap {
+    width: 40px;
+    height: 40px;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.gold-icon {
+    color: var(--gold-primary);
+}
+
+/* ─── Custom Builder Section ─── */
+.pp-template-section {
+    background: rgba(212, 175, 55, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.pp-back-inline {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border-radius: 10px;
+    color: var(--gold-light);
+    margin-right: 12px;
+}
+
+.pp-back-inline:hover {
+    background: var(--gold-primary);
+    color: #000;
+}
+
+.gold-tag {
+    background: rgba(212, 175, 55, 0.1) !important;
+    border: 1px solid rgba(212, 175, 55, 0.3) !important;
+    color: var(--gold-light) !important;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pp-tfield input {
+    border-color: rgba(212, 175, 55, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.pp-tfield input:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* ─── Prompt Area ─── */
+.pp-prompt-area {
+    margin-bottom: 20px;
+}
+
+.pp-textarea {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(5, 5, 5, 0.6);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-right: 45px;
+}
+
+.pp-textarea-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.pp-stt-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--gold-light);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.pp-stt-btn:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold-primary);
+}
+
+.pp-stt-btn.active {
+    background: var(--gold-primary);
+    color: #000;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+.pp-textarea:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+/* ─── Global Gold Button Utility ─── */
+.gold-btn {
+    background: var(--gold-gradient) !important;
+    color: #000 !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: var(--gold-glow) !important;
+}
+
+.gold-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4) !important;
+}
+
+@media (max-width: 768px) {
+    .pp-top-bar {
+        gap: 12px;
+    }
+    .pp-type-select {
+        min-width: 100%;
+    }
+    .pp-suggest-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

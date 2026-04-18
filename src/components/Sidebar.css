@@ -1,0 +1,141 @@
+.sidebar {
+    width: 320px;
+    height: calc(100vh - 32px);
+    margin: 16px 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    background: rgba(10, 10, 12, 0.95) !important;
+    backdrop-filter: blur(20px);
+    z-index: 200;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.gold-shadow-side {
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header {
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-premium {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-premium h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #fff;
+}
+
+.logo-premium h2 span {
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo-icon-gold {
+    color: var(--gold-primary);
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+}
+
+.sidebar-close-btn {
+    display: none;
+    background: transparent;
+    color: var(--gold-light);
+    cursor: pointer;
+    padding: 8px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: linear-gradient(to right, rgba(212, 175, 55, 0.3), transparent);
+    margin-top: 12px;
+}
+
+.saved-designs-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gold-primary);
+    margin-bottom: 16px;
+}
+
+.section-header h3 {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.designs-scroll-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.design-item-premium {
+    display: flex;
+    gap: 14px;
+    padding: 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -320px;
+        top: 0;
+        bottom: 0;
+        margin: 0;
+        width: 280px;
+        height: 100vh;
+        border-radius: 0 30px 30px 0;
+        border: none;
+        border-right: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .sidebar.open {
+        left: 0;
+        box-shadow: 20px 0 100px rgba(0,0,0,0.8);
+    }
+
+    .sidebar-close-btn {
+        display: flex;
+    }
+
+    .logo-premium h2 {
+        font-size: 20px;
+    }
+
+    .saved-designs-list {
+        display: flex; /* Restore for mobile drawer */
+    }
+
+    .sidebar-footer {
+        padding-bottom: 24px;
+    }
+}

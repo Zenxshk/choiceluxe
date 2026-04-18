@@ -6,25 +6,25 @@ import { ArrowLeft, Download, Paintbrush, Sparkles, Palette, ImagePlus, Zap, Cop
 // 🛡️ Strict System Prompt to enforce full-size images
 const SYSTEM_PROMPT = "SYSTEM INSTRUCTION: ALWAYS generate a FULL VIEW image of the entire furniture piece. Wide cinematic angle, centered composition, full silhouette visible, NO CROPPING, uncropped viewpoint, entire object visible from head to toe. ";
 
-// ✨ Premium Gallery Data (Local Assets from src/assets)
+// ✨ Premium Gallery Data (Public Assets for Static Serving)
 const CATALOG_GALLERY = {
     sofa: [
-        '/src/assets/sofa/da3b4378d2370b8cc73697d9ffbe5723.jpg',
-        '/src/assets/sofa/469c45b14d3b75d049c8b48bfd84b91f.jpg',
-        '/src/assets/sofa/9ccf68eba9e9607229345dca074cb27d.jpg',
-        '/src/assets/sofa/c88573e7eb59995d18ffc65e9250b58c.jpg',
-        '/src/assets/sofa/f0c472b0eda61e0c16af52402cfbc566.jpg'
+        '/assets/sofa/da3b4378d2370b8cc73697d9ffbe5723.jpg',
+        '/assets/sofa/469c45b14d3b75d049c8b48bfd84b91f.jpg',
+        '/assets/sofa/9ccf68eba9e9607229345dca074cb27d.jpg',
+        '/assets/sofa/c88573e7eb59995d18ffc65e9250b58c.jpg',
+        '/assets/sofa/f0c472b0eda61e0c16af52402cfbc566.jpg'
     ],
     bed: [
-        '/src/assets/bed/3c6d61992ddfca3b5eb5787f0e31877d.jpg',
-        '/src/assets/bed/ae1fde61f2c28d79cf13f711e7f3b776.jpg',
-        '/src/assets/bed/f7d45badd0aec95e747ea3646fccaefd.jpg'
+        '/assets/bed/3c6d61992ddfca3b5eb5787f0e31877d.jpg',
+        '/assets/bed/ae1fde61f2c28d79cf13f711e7f3b776.jpg',
+        '/assets/bed/f7d45badd0aec95e747ea3646fccaefd.jpg'
     ],
     wardrobe: [
-        '/src/assets/waredrobe/22fa5727c9aab8161714cd38a4016309.jpg',
-        '/src/assets/waredrobe/3dd325a91b50e23a8d2320d6f6f24b76.jpg',
-        '/src/assets/waredrobe/4711a6ad83ab3c6a3ef59dcd8628612a.jpg',
-        '/src/assets/waredrobe/cd5c4777107ea1d0e3801625f6ac8433.jpg'
+        '/assets/waredrobe/22fa5727c9aab8161714cd38a4016309.jpg',
+        '/assets/waredrobe/3dd325a91b50e23a8d2320d6f6f24b76.jpg',
+        '/assets/waredrobe/4711a6ad83ab3c6a3ef59dcd8628612a.jpg',
+        '/assets/waredrobe/cd5c4777107ea1d0e3801625f6ac8433.jpg'
     ]
 };
 
@@ -82,6 +82,7 @@ const getColorDescription = (hex, name) => {
 export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign }) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [activeTab, setActiveTab] = useState('create'); 
+    const [copied, setCopied] = useState(false);
 
     const [recolorImage, setRecolorImage] = useState(null);
     const [recolorPreview, setRecolorPreview] = useState(null);
@@ -91,12 +92,28 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
     const [isRecoloring, setIsRecoloring] = useState(false);
     const recolorFileRef = useRef(null);
 
+    const handleCopyPrompt = () => {
+        if (!activeDesign?.prompt) return;
+        navigator.clipboard.writeText(activeDesign.prompt);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleDownload = () => {
+        if (!activeDesign?.images[0]) return;
+        const link = document.createElement('a');
+        link.href = activeDesign.images[0];
+        link.download = `ChoiceLuxe-${activeDesign.type}-${Date.now()}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const runGeneration = async (formData, isEdit = false) => {
         setIsGenerating(true);
         const userPrompt = formData.textPrompt || `${formData.type} in Modern style`;
         const compositionConstraint = "Wider angle cinematic shot, full silhouette visible, centered furniture piece, no cropping, studio background.";
         
-        // 🚀 PREPENDING SYSTEM PROMPT BEFORE USER INPUT
         const finalPrompt = isEdit
             ? `${SYSTEM_PROMPT} VARIATION: ${userPrompt}. Preserve identical silhouette. ${compositionConstraint}`
             : `${SYSTEM_PROMPT} NEW DESIGN: Premium ${formData.type}, ${userPrompt}, high-end materials, 8k resolution, professional lighting.`;
@@ -159,7 +176,6 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
 
             const fd = new FormData();
             fd.append('image', imgBlob);
-            // 🚀 PREPENDING SYSTEM PROMPT
             fd.append('prompt', `${SYSTEM_PROMPT} RECOLORING TASK: Change the color of the ${recolorObject} into EXACTLY ${colorDesc}. Absolute textures and lighting identical.`);
             fd.append('select_prompt', recolorObject);
             fd.append('output_format', 'jpeg');
@@ -208,47 +224,53 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
 
                     {activeTab === 'recolor' && (
                         <div className="recolor-panel glass-panel">
-                            <div className="recolor-layout">
-                                <div className="recolor-main-side">
-                                    <div className="recolor-upload-area" onClick={() => recolorFileRef.current?.click()}>
-                                        <input type="file" accept="image/*" ref={recolorFileRef} style={{ display: 'none' }} onChange={handleRecolorUpload} />
-                                        {recolorPreview ? <img src={recolorPreview} className="img-standardized" /> : <div className="upl-pl"><ImagePlus size={32} /><p>Upload masterpiece</p></div>}
-                                    </div>
-                                    
-                                    <div className="masterpiece-gallery-wrap">
-                                        <div className="gallery-header">
-                                            <p>OR Select From Catalog</p>
-                                            <div className="mini-cat-tabs">
-                                                {['sofa', 'bed', 'wardrobe'].map(cat => (
-                                                    <button key={cat} className={recolorObject === cat ? 'active' : ''} onClick={() => setRecolorObject(cat)}>{cat}</button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="gallery-scroll">
-                                            {CATALOG_GALLERY[recolorObject === 'wardrobe' ? 'wardrobe' : recolorObject]?.map((url, i) => (
-                                                <div key={i} className="gallery-item-luxury" onClick={() => selectFromCatalog(url)}>
-                                                    <img src={url} alt="catalog" />
-                                                </div>
+                            {/* 📱 Unified Layout for consistency across grids */}
+                            <div className="recolor-layout-unified">
+                                <div className="recolor-upload-area" onClick={() => recolorFileRef.current?.click()}>
+                                    <input type="file" accept="image/*" ref={recolorFileRef} style={{ display: 'none' }} onChange={handleRecolorUpload} />
+                                    {recolorPreview ? <img src={recolorPreview} className="img-standardized" /> : <div className="upl-pl"><ImagePlus size={32} /><p>Upload masterpiece</p></div>}
+                                </div>
+                                
+                                <div className="masterpiece-gallery-wrap">
+                                    <div className="gallery-header">
+                                        <p>OR Select From Catalog</p>
+                                        <div className="mini-cat-tabs">
+                                            {['sofa', 'bed', 'wardrobe'].map(cat => (
+                                                <button key={cat} className={recolorObject === cat ? 'active' : ''} onClick={() => setRecolorObject(cat)}>{cat}</button>
                                             ))}
                                         </div>
                                     </div>
+                                    <div className="gallery-scroll">
+                                        {CATALOG_GALLERY[recolorObject === 'wardrobe' ? 'wardrobe' : recolorObject]?.map((url, i) => (
+                                            <div key={i} className="gallery-item-luxury" onClick={() => selectFromCatalog(url)}>
+                                                <img src={url} alt="catalog" />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
-                                <div className="recolor-controls">
-                                    <h3>🎯 Target finish</h3>
-                                    <div className="field-group">
-                                        <label>Exact Color Hex</label>
-                                        <div className="hex-row">
-                                            <input type="text" value={recolorHex} onChange={e => setRecolorHex(e.target.value)} />
-                                            <input type="color" value={recolorHex} onChange={e => setRecolorHex(e.target.value)} />
+                                <div className="recolor-controls-unified">
+                                    <div className="controls-header">
+                                        <h3>🎯 Target finish</h3>
+                                        <p>Specify exact colors and materials.</p>
+                                    </div>
+                                    
+                                    <div className="controls-grid">
+                                        <div className="field-group">
+                                            <label>Exact Color Hex</label>
+                                            <div className="hex-row">
+                                                <input type="text" value={recolorHex} onChange={e => setRecolorHex(e.target.value)} />
+                                                <input type="color" value={recolorHex} onChange={e => setRecolorHex(e.target.value)} />
+                                            </div>
+                                        </div>
+                                        <div className="field-group">
+                                            <label>Material / Finish Name</label>
+                                            <input type="text" placeholder="e.g. Royal Red Velvet" value={recolorTarget} onChange={e => setRecolorTarget(e.target.value)} />
                                         </div>
                                     </div>
-                                    <div className="field-group">
-                                        <label>Material Name</label>
-                                        <input type="text" placeholder="e.g. Royal Red Velvet" value={recolorTarget} onChange={e => setRecolorTarget(e.target.value)} />
-                                    </div>
+
                                     <button className="gold-btn big-btn" onClick={handleRecolor} disabled={isRecoloring || !recolorPreview}>
-                                        {isRecoloring ? 'Processing...' : 'Transform now'}
+                                        {isRecoloring ? 'Processing...' : 'Transform now'} 🎨
                                     </button>
                                 </div>
                             </div>
@@ -257,11 +279,43 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
                 </>
             ) : (
                 <div className="results-view">
-                    <div className="top-nav-bar">
-                        <button className="back-nav-btn" onClick={() => onAddDesign(null)}><ArrowLeft size={18} /><span>Back to Creation</span></button>
+                    <div className="results-header glass-panel gold-shadow">
+                        <div className="results-header-top">
+                            <div className="design-tags">
+                                <span className="tag gold-tag">{activeDesign.type}</span>
+                                {activeDesign.style && <span className="tag gold-tag">{activeDesign.style}</span>}
+                            </div>
+                            <button className="back-nav-btn result-back" onClick={() => onAddDesign(null)}>
+                                <ArrowLeft size={16} /> <span>Back to Canvas</span>
+                            </button>
+                        </div>
+                        <p className="design-prompt-preview">{activeDesign.prompt}</p>
+                        
+                        <div className="viewer-actions-top">
+                            <button onClick={handleDownload} className="action-btn download-btn">
+                                <Download size={14} /> <span>Save masterpiece</span>
+                            </button>
+                            <button onClick={handleCopyPrompt} className={`action-btn copy-btn ${copied ? 'copied' : ''}`}>
+                                {copied ? <Check size={14} /> : <Copy size={14} />}
+                                <span>{copied ? 'Copied!' : 'Copy prompt'}</span>
+                            </button>
+                        </div>
                     </div>
-                    <div className="viewer-image-wrap luxury-shadow">
-                        <ImageLoader src={activeDesign.images[0]} />
+
+                    <div className="single-image-viewer glass-panel luxury-shadow">
+                        <ImageLoader src={activeDesign.images[0]} alt={`${activeDesign.type} render`} />
+                    </div>
+
+                    <div className="edit-panel glass-panel">
+                        <p className="edit-panel-label">✏️ Refine composition</p>
+                        <PromptPanel
+                            onGenerate={handleGenerate}
+                            onEdit={handleEdit}
+                            isGenerating={isGenerating}
+                            compact={true}
+                            editMode={true}
+                            activeDesign={activeDesign}
+                        />
                     </div>
                 </div>
             )}

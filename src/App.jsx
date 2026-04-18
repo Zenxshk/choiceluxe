@@ -29,6 +29,7 @@ function App() {
           <Menu size={24} />
         </button>
         <div className="mobile-brand-logo">
+          <img src="/logo.png" alt="Choice Luxe Logo" className="logo-img-gold" />
           <h2>Choice <span>Luxe</span></h2>
         </div>
         <div className="mobile-header-spacer" />

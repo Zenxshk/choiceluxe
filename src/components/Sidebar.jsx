@@ -7,7 +7,7 @@ export default function Sidebar({ designs, activeDesignId, setActiveDesignId, is
         <div className={`sidebar glass-panel gold-shadow-side ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
                 <div className="logo-premium">
-                    <Compass className="logo-icon-gold" size={24} />
+                    <img src="/logo.png" alt="Choice Luxe Logo" className="logo-img-gold" />
                     <h2>Choice <span>Luxe</span></h2>
                 </div>
                 <button className="sidebar-close-btn" onClick={onClose}>

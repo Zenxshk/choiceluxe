@@ -44,9 +44,12 @@
     -webkit-text-fill-color: transparent;
 }
 
-.logo-icon-gold {
-    color: var(--gold-primary);
+.logo-img-gold {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
     filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+    border-radius: 6px;
 }
 
 .sidebar-close-btn {

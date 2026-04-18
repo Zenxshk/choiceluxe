@@ -259,7 +259,14 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
                                         <div className="field-group">
                                             <label>Exact Color Hex</label>
                                             <div className="hex-row">
-                                                <input type="text" value={recolorHex} onChange={e => setRecolorHex(e.target.value)} />
+                                                <input 
+                                                    type="text" 
+                                                    value={recolorHex} 
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        setRecolorHex(val.startsWith('#') ? val : `#${val}`);
+                                                    }} 
+                                                />
                                                 <input type="color" value={recolorHex} onChange={e => setRecolorHex(e.target.value)} />
                                             </div>
                                         </div>
@@ -270,7 +277,7 @@ export default function Dashboard({ onAddDesign, onUpdateDesign, activeDesign })
                                     </div>
 
                                     <button className="gold-btn big-btn" onClick={handleRecolor} disabled={isRecoloring || !recolorPreview}>
-                                        {isRecoloring ? 'Processing...' : 'Transform now'} 🎨
+                                        {isRecoloring ? 'Architect Transforming...' : 'Transform Masterpiece'} 🎨
                                     </button>
                                 </div>
                             </div>

@@ -102,6 +102,15 @@ const DEFAULT_FORM = {
     model: 'model1',
 };
 
+const QUICK_ACTION_CLUSTERS = [
+    { label: '💎 Velvet', value: 'luxurious velvet texture, soft sheen' },
+    { label: '🪵 Oak', value: 'natural light oak wood, grain details' },
+    { label: '✨ Gold', value: 'brushed gold metal accents, premium finish' },
+    { label: '🖤 Black Matte', value: 'matte black industrial finish' },
+    { label: '🌿 Zen', value: 'scandinavian minimalist style, neutral tones' },
+    { label: '🎭 Bold', value: 'vibrant statement colors, contemporary art deco' },
+];
+
 export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact = false, editMode = false, activeDesign = null }) {
     const [formData, setFormData] = useState(
         editMode && activeDesign ? { ...DEFAULT_FORM, ...activeDesign, textPrompt: '' } : DEFAULT_FORM
@@ -112,6 +121,14 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
     const [isListening, setIsListening] = useState(false);
     const dropdownRef = useRef(null);
     const recognitionRef = useRef(null);
+
+    // ── Missing Features Restoration ──
+    const appendToPrompt = (text) => {
+        setFormData(prev => ({
+            ...prev,
+            textPrompt: prev.textPrompt ? `${prev.textPrompt}, ${text}` : text
+        }));
+    };
 
     // Initialize Speech Recognition
     useEffect(() => {
@@ -124,7 +141,7 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
 
             recognitionRef.current.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                setFormData(prev => ({ ...prev, textPrompt: prev.textPrompt + ' ' + transcript }));
+                appendToPrompt(transcript);
                 setIsListening(false);
             };
 
@@ -168,8 +185,10 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
     const handleSystemPrompt = () => {
         const list = SYSTEM_PROMPTS[formData.type] || SYSTEM_PROMPTS.sofa;
         const randomIdx = Math.floor(Math.random() * list.length);
-        const prompt = list[randomIdx] + ', photorealistic 8K product photography, clean white background.';
-        setFormData(prev => ({ ...prev, textPrompt: prompt }));
+        const prompt = list[randomIdx];
+        
+        // 🚀 APPEND OR REPLACE? USER PREFERED APPENDING
+        appendToPrompt(prompt);
         setPromptMode('system');
         setDropdownOpen(false);
     };
@@ -177,24 +196,21 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
     // ── User Prompt: show fill-in-blanks ──
     const handleUserPrompt = () => {
         const tmpl = USER_TEMPLATES[formData.type] || USER_TEMPLATES.sofa;
-        // Pre-populate template fields with defaults
         const defaults = {};
         Object.entries(tmpl.fields).forEach(([key, val]) => { defaults[key] = val.default; });
         setTemplateFields(defaults);
         setPromptMode('user');
         setDropdownOpen(false);
-        // Build the prompt immediately from defaults
         buildPromptFromTemplate(defaults, formData.type);
     };
 
     const buildPromptFromTemplate = (fields, type) => {
         const tmpl = USER_TEMPLATES[type || formData.type] || USER_TEMPLATES.sofa;
-        let prompt = tmpl.sentence;
+        let pText = tmpl.sentence;
         Object.entries(fields).forEach(([key, value]) => {
-            prompt = prompt.replace(`{${key}}`, value || tmpl.fields[key]?.default || '');
+            pText = pText.replace(`{${key}}`, value || tmpl.fields[key]?.default || '');
         });
-        prompt += ', photorealistic 8K product photography, clean white studio background.';
-        setFormData(prev => ({ ...prev, textPrompt: prompt }));
+        setFormData(prev => ({ ...prev, textPrompt: pText }));
     };
 
     const handleTemplateFieldChange = (key, value) => {
@@ -205,7 +221,6 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
 
     const handleTypeChange = (val) => {
         handleChange('type', val);
-        // If user prompt is active, switch template
         if (promptMode === 'user') {
             const tmpl = USER_TEMPLATES[val] || USER_TEMPLATES.sofa;
             const defaults = {};
@@ -230,43 +245,43 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
         <div className={`prompt-panel ${compact ? 'compact' : 'glass-panel'}`}>
             {/* ── Top Control Bar ────────────────────────── */}
             <div className="pp-top-bar">
-                {/* ── Suggestion Dropdown ─── */}
-                {!editMode && (
-                    <div className="pp-suggest-wrap" ref={dropdownRef}>
-                        <button
-                            type="button"
-                            className="pp-btn pp-suggest-btn gold-glow-btn"
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            disabled={isGenerating}
-                        >
-                            <Compass size={16} />
-                            <span>Get Suggestions</span>
-                            <ChevronDown size={14} />
-                        </button>
-                        {dropdownOpen && (
-                            <div className="pp-dropdown glass-panel">
-                                <button className="pp-dropdown-item" onClick={handleSystemPrompt}>
-                                    <div className="dd-icon-wrap gold-icon"><Wand2 size={18} /></div>
-                                    <div>
-                                        <strong>Auto-Design</strong>
-                                        <small>Complete studio prompt</small>
-                                    </div>
-                                </button>
+                {/* 🧭 Suggestions (Restored in Edit Mode) ─── */}
+                <div className="pp-suggest-wrap" ref={dropdownRef}>
+                    <button
+                        type="button"
+                        className="pp-btn pp-suggest-btn gold-glow-btn"
+                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                        disabled={isGenerating}
+                    >
+                        <Compass size={16} />
+                        <span>Architect Insights</span>
+                        <ChevronDown size={14} />
+                    </button>
+                    {dropdownOpen && (
+                        <div className="pp-dropdown glass-panel">
+                            <button className="pp-dropdown-item" onClick={handleSystemPrompt}>
+                                <div className="dd-icon-wrap gold-icon"><Wand2 size={18} /></div>
+                                <div>
+                                    <strong>AI Auto-Design</strong>
+                                    <small>Architectural concepts</small>
+                                </div>
+                            </button>
+                            {!editMode && (
                                 <button className="pp-dropdown-item" onClick={handleUserPrompt}>
                                     <div className="dd-icon-wrap gold-icon"><Code size={18} /></div>
                                     <div>
                                         <strong>Custom Builder</strong>
-                                        <small>Step-by-step template</small>
+                                        <small>Step-by-step logic</small>
                                     </div>
                                 </button>
-                            </div>
-                        )}
-                    </div>
-                )}
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 {!editMode && (
                     <div className="pp-type-select">
-                        <label>Furniture</label>
+                        <label>Category</label>
                         <select value={formData.type} onChange={(e) => handleTypeChange(e.target.value)} disabled={isGenerating}>
                             <option value="sofa">🛋️ Sofa Luxe</option>
                             <option value="bed">🛏️ Master Bed</option>
@@ -279,7 +294,7 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
 
                 {!editMode && (
                     <div className="pp-type-select premium-select">
-                        <label>AI Engine</label>
+                        <label>AI Oracle</label>
                         <select value={formData.model} onChange={(e) => handleChange('model', e.target.value)} disabled={isGenerating}>
                             <option value="model1">🚀 FAST 1.0 (Luxury)</option>
                             <option value="model2">⚡ FAST 2.0 (Turbo)</option>
@@ -297,10 +312,9 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
                             <ArrowLeft size={16} />
                         </button>
                         <span className="template-badge gold-tag">
-                            <User size={12} /> Custom Builder: {currentTemplate.label}
+                            <User size={12} /> Custom Logic: {currentTemplate.label}
                         </span>
                     </div>
-                    <p className="pp-template-hint">Fill the fields below. Your prompt builds automatically:</p>
                     <div className="pp-template-fields">
                         {Object.entries(currentTemplate.fields).map(([key, field]) => (
                             <div className="pp-tfield" key={key}>
@@ -318,35 +332,50 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
                 </div>
             )}
 
-            {/* ── Prompt Textarea ────────────────────────── */}
+            {/* ── Prompt Textarea & Action Chips ──────────── */}
             <div className="pp-prompt-area">
-                {promptMode === 'system' && !editMode && (
+                {promptMode === 'system' && (
                     <div className="pp-mode-label gold-tag">
-                        <span><Wand2 size={12} /> Pro-Generated Concept</span>
-                        <button onClick={() => { setPromptMode(null); setFormData(p => ({...p, textPrompt: ''})); }}><X size={12} /></button>
+                        <span><Wand2 size={12} /> Pro Concept Injected</span>
+                        <button onClick={() => { setPromptMode(null); }}><X size={12} /></button>
                     </div>
                 )}
                 <div className="pp-textarea-wrap">
                     <textarea
                         className="pp-textarea"
                         placeholder={editMode
-                            ? "Describe the change… e.g. change color to blue, add gold legs…"
-                            : "Click 🧭 Suggestion to get started, or type your own prompt…"}
+                            ? "Describe refinements (e.g. 'change color to navy blue', 'add steel legs')..."
+                            : "Click 🧭 Insights or use chips below to build your prompt..."}
                         value={formData.textPrompt}
                         onChange={(e) => handleChange('textPrompt', e.target.value)}
                         disabled={isGenerating}
-                        rows={editMode ? 2 : 4}
+                        rows={editMode ? 2 : 3}
                     />
                     {!editMode && recognitionRef.current && (
                         <button 
                             type="button" 
                             className={`pp-stt-btn ${isListening ? 'active' : ''}`}
                             onClick={toggleListening}
-                            title="Speak your prompt"
+                            title="Speak Concept"
                         >
                             {isListening ? <MicOff size={18} /> : <Mic size={18} />}
                         </button>
                     )}
+                </div>
+
+                {/* 🚀 QUICK ACTION CHIPS (NEW) */}
+                <div className="pp-action-chips">
+                    {QUICK_ACTION_CLUSTERS.map((chip, idx) => (
+                        <button
+                            key={idx}
+                            type="button"
+                            className="pp-chip"
+                            onClick={() => appendToPrompt(chip.value)}
+                            disabled={isGenerating}
+                        >
+                            {chip.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -354,11 +383,11 @@ export default function PromptPanel({ onGenerate, onEdit, isGenerating, compact 
             <div className="pp-bottom-bar">
                 {editMode ? (
                     <button type="button" onClick={() => handleSubmit(true)} disabled={isGenerating || !formData.textPrompt} className="pp-btn pp-edit-btn gold-btn">
-                        {isGenerating ? <><span className="loader" /> Studio Applying...</> : <><Sparkles size={16} /> Refine Design</>}
+                        {isGenerating ? <><span className="loader" /> Re-imagining...</> : <><Sparkles size={16} /> Apply Refinements</>}
                     </button>
                 ) : (
                     <button type="button" onClick={() => handleSubmit(false)} disabled={isGenerating || !formData.textPrompt} className="pp-btn generate-btn gold-btn">
-                        {isGenerating ? <><span className="loader" /> Architect Rendering...</> : <><Zap size={16} /> Render Design</>}
+                        {isGenerating ? <><span className="loader" /> Architect Rendering...</> : <><Zap size={16} /> Instantiate Design</>}
                     </button>
                 )}
             </div>

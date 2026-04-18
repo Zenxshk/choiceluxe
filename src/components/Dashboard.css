@@ -147,6 +147,39 @@
     gap: 16px;
     overflow-x: auto;
     padding: 4px 4px 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-primary) transparent;
+}
+
+/* 🚀 Prompt Action Chips */
+.pp-action-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.pp-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pp-chip:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: var(--gold-primary);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.pp-chip:active {
+    transform: scale(0.95);
 }
 
 .gallery-item-luxury {
@@ -304,20 +337,26 @@
 .viewer-actions-top {
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .action-btn {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 12px;
+    padding: 10px 16px;
     border-radius: 12px;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: none;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .download-btn {
@@ -328,13 +367,13 @@
 .copy-btn {
     background: rgba(255,255,255,0.05);
     color: #fff;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.1) !important;
 }
 
 .copy-btn.copied {
     background: #4ade80;
     color: #000;
-    border-color: #4ade80;
+    border-color: #4ade80 !important;
 }
 
 .single-image-viewer {
